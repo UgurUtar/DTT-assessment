@@ -122,11 +122,13 @@
     width: 90%;
     margin-left: 5%;
 }
-
-
-.edit,
-.delete {
-    display: none;
+.edits {
+    position: absolute;
+    right: 0;
+    display: flex;
+    height: 25px;
+    padding: 4px;
+    margin-right: 10px;
 }
 
 }
