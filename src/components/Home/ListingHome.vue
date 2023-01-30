@@ -1,24 +1,35 @@
 <script>
-
+export default {
+    data() {
+      return {
+        houses: [
+          { id: 1, street: "Johan Kernstraat 17", price: "€ 200.000", postalcode: "1063VC Amsterdam", beds: "3", baths: "1", size: "100 m2" },
+          { id: 2, street: "Johan Kernstraat 17", price: "€ 200.000", postalcode: "1063VC Amsterdam", beds: "3", baths: "1", size: "100 m2" },
+          { id: 3, street: "Johan Kernstraat 17", price: "€ 200.000", postalcode: "1063VC Amsterdam", beds: "3", baths: "1", size: "100 m2" }
+        ]
+      };
+    }
+};
 </script>
 
 <template>
     <div class="wrapper">
-        <div class="house">
+        <div class="house" v-for="house in houses" :key="house.id">
+            <RouterLink class="housedetail" :to="`/home/detail/${house.id}`">
             <div class="houseimage">
                 <img class="houseimg" src="@/assets/dtt/img_placeholder_house.png" alt="house">
             </div>
             <div class="inforow">
-                <a class="street">Johan Kernstraat 17</a>
-                <a class="price"> € 200.000</a>
-                <a class="postalcode">1063VC Amsterdam</a>
+                <a class="street">{{ house.street }}</a>
+                <a class="price">{{ house.price }}</a>
+                <a class="postalcode">{{ house.postalcode }}</a>
                 <div class="houseinfo">
                     <img class="bed" src="@/assets/dtt/ic_bed.png" alt="bed">
-                    <a class="beds"> 3</a>
+                    <a class="beds">{{ house.beds }}</a>
                     <img class="bath" src="@/assets/dtt/ic_bath.png" alt="bath">
-                    <a class="baths"> 1</a>
+                    <a class="baths">{{ house.baths }}</a>
                     <img class="size" src="@/assets/dtt/ic_size.png" alt="size">
-                    <a class="sizes"> 100 m2</a>
+                    <a class="sizes">{{ house.size }}</a>
                 </div>
             </div>
             <div class="edits">
@@ -29,6 +40,7 @@
                     <img class="delete" src="@/assets/dtt/ic_delete.png" alt="delete">
                 </RouterLink>
             </div>
+        </RouterLink>
         </div>
     </div>
 </template>
@@ -45,6 +57,13 @@
     margin-left: 15%;
 }
 
+.housedetail {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    text-decoration: none;
+}
+
 .house {
     display: flex;
     background-color: var(--background2);
@@ -53,6 +72,7 @@
     height: 160px;
     width: 100%;
     padding: 10px;
+    margin: 6px;
 }
 
 .houseimage img  {
