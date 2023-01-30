@@ -15,6 +15,7 @@ export default {
 <template>
     <div class="wrapper">
         <div class="house" v-for="house in houses" :key="house.id">
+            <RouterLink class="housedetail" :to="`/home/detail/${house.id}`">
             <div class="houseimage">
                 <img class="houseimg" src="@/assets/dtt/img_placeholder_house.png" alt="house">
             </div>
@@ -39,6 +40,7 @@ export default {
                     <img class="delete" src="@/assets/dtt/ic_delete.png" alt="delete">
                 </RouterLink>
             </div>
+        </RouterLink>
         </div>
     </div>
 </template>
@@ -53,6 +55,13 @@ export default {
     margin-top: 30px;
     width: 70%;
     margin-left: 15%;
+}
+
+.housedetail {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    text-decoration: none;
 }
 
 .house {

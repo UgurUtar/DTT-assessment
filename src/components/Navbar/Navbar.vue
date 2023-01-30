@@ -7,8 +7,9 @@ import { RouterLink, RouterView } from "vue-router";
     <div class="navbar">
     <nav>
         <img class="logo" src="@/assets/dtt/logo_dtt.png" alt="logo">
-        <RouterLink class="houses" to="/">Houses</RouterLink>
-        <RouterLink class="about" to="/about"> About</RouterLink>
+        <RouterLink v-if="$route.name === 'home' || $route.name === 'detail'" class="houses-active" to="/">Houses</RouterLink>
+        <RouterLink v-else class="houses" to="/">Houses</RouterLink>
+        <RouterLink  class="about" to="/about"> About</RouterLink>
     </nav>
     </div>
 </div>
@@ -16,14 +17,12 @@ import { RouterLink, RouterView } from "vue-router";
 <div class="mobile-wrapper">
     <div class="mobile-navbar">
         <RouterLink class="mobile-houses" to="/">
-        <img v-if="$route.name === 'home'"
-        class="house-logo" src="@/assets/dtt/navigarion_home_active.png"><img v-else
-        class="inactive-house-logo" src="@/assets/dtt/navigarion_home.png">
+        <img v-if="$route.name === 'home' || $route.name === 'detail'" class="house-logo" src="@/assets/dtt/navigarion_home_active.png">
+        <img v-else class="inactive-house-logo" src="@/assets/dtt/navigarion_home.png">
         </RouterLink>
         <RouterLink class="mobile-about" to="/about">
-        <img v-if="$route.name === 'about'"
-        class="about-logo" src="@/assets/dtt/navigarion_info_active.png"><img v-else
-        class="inactive-about-logo" src="@/assets/dtt/navigarion_info.png">
+        <img v-if="$route.name === 'about'" class="about-logo" src="@/assets/dtt/navigarion_info_active.png">
+        <img v-else class="inactive-about-logo" src="@/assets/dtt/navigarion_info.png">
         </RouterLink>
     </div>
 </div>
@@ -92,6 +91,16 @@ nav {
     font-family: var(--font-family);
     font-weight: 650;
     color: var(--tertiary);
+    text-decoration: none;
+}
+
+.houses-active{
+    margin-top: 15px;
+    margin-left: 40px;
+    font-size: 15px;
+    font-family: var(--font-family);
+    font-weight: 650;
+    color: var(--primary-text);
     text-decoration: none;
 }
 
