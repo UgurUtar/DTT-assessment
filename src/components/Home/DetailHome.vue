@@ -19,6 +19,18 @@ export default {
                 <img class="back-button" src="../../assets/dtt/ic_back_grey.png" alt="back">
                 <a class="back-text">Back to overview</a>
             </router-link>
+            <router-link class="mobile-back-class" to="/">
+                <img class="mobile-back-button" src="../../assets/dtt/ic_back_white.png" alt="back">
+            </router-link>
+
+            <div class="mobile-edits">
+            <router-link to="/edit-house">
+                <img class="mobile-edit" src="../../assets/dtt/ic_edit_white.png" alt="edit">
+            </router-link>
+            <router-link to="/delete">
+                <img class="mobile-delete" src="../../assets/dtt/ic_delete_white.png" alt="delete">
+            </router-link>
+        </div>
         </div>
 
         <div class="mid">
@@ -36,6 +48,7 @@ export default {
                         <router-link class="delete" to="/delete">
                             <img class="delete" src="../../assets/dtt/ic_delete.png" alt="delete">
                         </router-link>
+                        
                     </div>
                 </div>
                 <div class="details">
@@ -125,6 +138,10 @@ export default {
     height: 20px;
 }
 
+.mobile-edits {
+    display: none;
+}
+
 .back-text {
     font-size: 14px;
     font-family: var(--font-family);
@@ -181,6 +198,10 @@ export default {
     width: 17px;
     height: 17px;
     margin-right: 20px;
+}
+
+.mobile-back-button {
+    display: none;
 }
 
 .postalcodetext,
@@ -300,8 +321,167 @@ export default {
     margin-top: 2px;
 }
 
-@media screen and (max-width: 900px) {
+@media screen and (max-width: 750px) {
 
+.back-class {
+    display: none;
+}
+
+.wrapper {
+    width: 100%;
+    margin-left: 0;
+    position: relative;
+}
+
+.mid {
+    display: block;
+}
+.house {
+    width: 100%;
+    height: 100%;
+    margin-top: 0;
+}
+
+.mobile-back-button{
+    display: flex;
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin-top: 20px;
+    margin-left: 20px;
+    z-index: 1;
+}
+.mobile-edits {
+    display: flex;
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin-top: 20px;
+    margin-right: 50px;
+    z-index: 1;
+    gap: 20px;
+}
+
+
+.houseimage {
+    width: 100%;
+    height: 100%;
+}
+
+.housedetail {
+    width: 100%;
+    height: 60%;
+    border-top-left-radius: 40px;
+    border-top-right-radius: 40px;
+    bottom: 55px;
+}
+
+.postalcodetext,
+.pricetext,
+.sizetext,
+.builttext,
+.bedtext,
+.bathtext,
+.garagetext {
+    font-size: 13px;
+    font-family: var(--font-family);
+    font-weight: 525;
+    color: var(--secondary-text);
+}
+
+.postalcodeimage,
+.priceimage,
+.sizeimage,
+.builtimage,
+.bedimage,
+.bathimage,
+.garageimage {
+    width: 15px;
+    height: 15px;
+    margin-top: 20px;
+    margin-left: 20px;
+}
+
+.edits {
+display: none;
+}
+
+.mobile-edit,
+.mobile-delete {
+    width: 17px;
+    height: 17px;
+}
+.recommended {
+    width: 90%;
+    margin-top: 0;
+    margin-left: 5%;
+}
+
+.smallhouse {
+    display: flex;
+    margin-top: 10px;
+    background: var(--background2);
+    border-radius: 5px;
+    padding: 6px;
+}
+
+.smallhouseimage {
+    width: 80px;
+    height: 80px;
+    border-radius: 5px;
+    object-fit: cover;
+    object-position: left;
+}
+
+.smallhousedetail {
+    margin-left: 10px;
+}
+
+.smallstreet, .smallprice, .smallpostalcode {
+    display: flex;
+    justify-content: space-between;
+}
+
+.smallhousestreet {
+    font-weight: 550;
+    font-size: 13px;
+    color: var(--primary-text);
+}
+
+.smallhouseprice {
+    font-size: 10px;
+    color: var(--secondary);
+}
+
+.smallhousepostalcode {
+    font-size: 10px;
+    color: var(--tertiary2);
+}
+
+.smalldetails {
+    display: flex;
+    margin-top: 10px;
+}
+
+.smallbedimage, .smallbathimage, .smallsizeimage {
+    width: 10px;
+    height: 10px;
+    margin-right: 5px;
+    margin-left: 5px;
+    margin-top: 2px;
+}
+
+.smallbedtext, .smallbathtext, .smallsizetext {
+    font-size: 9px;
+    white-space: nowrap;
+    font-weight: 700;
+    color: var(--tertiary2);
+    margin-top: 2px;
+}
 
 
 }
