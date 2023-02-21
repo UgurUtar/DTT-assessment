@@ -17,7 +17,7 @@ import { RouterLink, RouterView } from "vue-router";
 <div class="mobile-wrapper">
     <div class="mobile-navbar">
         <RouterLink class="mobile-houses" to="/">
-        <img v-if="$route.name === 'home' || $route.name === 'detail'" class="house-logo" src="@/assets/dtt/navigarion_home_active.png">
+        <img v-if="$route.name === 'home' || $route.name === 'detail' || $route.name === 'create-house'" class="house-logo" src="@/assets/dtt/navigarion_home_active.png">
         <img v-else class="inactive-house-logo" src="@/assets/dtt/navigarion_home.png">
         </RouterLink>
         <RouterLink class="mobile-about" to="/about">
@@ -49,6 +49,7 @@ import { RouterLink, RouterView } from "vue-router";
     height: 70px;
     position: fixed;
     bottom: 0;
+    z-index: 3;
 }
 
 .mobile-navbar {
