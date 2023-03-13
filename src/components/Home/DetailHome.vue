@@ -1,50 +1,94 @@
 <script>
-const myHeaders = new Headers();
-myHeaders.append("X-Api-Key", "9alQkyY7gWw-L4RDVAsZHvBxiKtdoh05");
+import { useHousesStore } from '@/stores/app.js';
+import { useRoute } from 'vue-router';
+import { computed, watch, ref } from 'vue';
 
-const requestOptions = {
-    method: 'GET',
-    headers: myHeaders,
-    redirect: 'follow'
-};
 export default {
-    data() {
-        return {
-            houses: [],
-            house: {}
-        };
-    },
-    methods: {
-        getHouses() {
-            fetch("https://api.intern.d-tt.nl/api/houses", requestOptions)
-                .then(response => response.json())
-                .then(data => {
-                    this.houses = data
-                    const id = this.$route.params.id
-                    this.house = this.houses.find(house => house.id.toString() === id.toString());
-                    console.log(this.house)
-                })
-                .catch(error => console.error(error))
-        },
-        getRandomHouses(num) {
-            return this.houses.sort(() => Math.random() - 0.5).slice(0, num);
-        }
+    setup() {
+        const storeHouses = useHousesStore();
+        const router = useRoute();
+        const id = router.params.id;
 
+
+        const deleteHouse = (id) => {
+            storeHouses.deleteHouse(id);
+        };
+
+        const getHouses = () => {
+            storeHouses.getHouses();
+        };
+
+        const house = computed(() => {
+            return storeHouses.houses.find(house => house.id.toString() === id.toString());
+        });
+
+        const houses = computed(() => {
+            return storeHouses.houses;
+        });
+
+        const recommendedHouses = computed(() => {
+            const index = houses.value.findIndex(house => house.id.toString() === id.toString());
+            const nextThreeHouses = houses.value.slice(index + 1, index + 4);
+            if (nextThreeHouses.length < 3) {
+                const firstThreeHouses = houses.value.slice(0, 3);
+                return nextThreeHouses.concat(firstThreeHouses);
+            }
+            return nextThreeHouses;
+        });
+
+        const deletePopup = (id) => {
+            const popup = document.getElementById('popup');
+            popup.style.display = 'flex';
+            const yes = document.getElementById('yes');
+            yes.addEventListener('click', () => {
+                deleteHouse(id);
+                popup.style.display = 'none';
+            });
+            const no = document.getElementById('no');
+            no.addEventListener('click', () => {
+                popup.style.display = 'none';
+            });
+        };
+
+        const houseId = ref(router.params.id);
+
+        watch(() => router.params.id, (newId) => {
+            houseId.value = newId;
+            window.location.reload();
+    });
+
+
+        return {
+            getHouses,
+            house,
+            id,
+            houses,
+            deleteHouse,
+            recommendedHouses,
+            deletePopup,
+        };
     },
 
     created() {
-        this.getHouses()
+        this.getHouses();
     },
-
-    mounted() {
-        this.getHouses()
-    }
 }
 
 </script>
 
 <template>
-    <div class="wrapper">
+    <div class="wrapper" v-if="house">
+        <div class="popup" id="popup">
+            <div class="popup-content">
+                <a class="headertext">Delete Listing</a>
+                <a class="popup-text" id="firsttext">Are you sure you want to delete this listing?</a>
+                <a class="popup-text" id="secondtext">This action cannot be undone.</a>
+                <div class="popup-buttons">
+                    <button class="popup-button" id="yes">YES, DELETE</button>
+                    <button class="popup-button" id="no">GO BACK</button>
+                </div>
+            </div>
+        </div>
         <div class="back">
             <router-link class="back-class" to="/">
                 <img class="back-button" src="../../assets/dtt/ic_back_grey.png" alt="back">
@@ -54,13 +98,13 @@ export default {
                 <img class="mobile-back-button" src="../../assets/dtt/ic_back_white.png" alt="back">
             </router-link>
 
-            <div class="mobile-edits">
-                <router-link to="/edit-house">
+            <div class="mobile-edits" v-if="house.madeByMe">
+                <router-link :to="`/edit-house/${house.id}`">
                     <img class="mobile-edit" src="../../assets/dtt/ic_edit_white.png" alt="edit">
                 </router-link>
-                <router-link to="/delete">
+                <div class="deletebutton" @click="deletePopup(house.id)">
                     <img class="mobile-delete" src="../../assets/dtt/ic_delete_white.png" alt="delete">
-                </router-link>
+                </div>
             </div>
         </div>
 
@@ -72,13 +116,13 @@ export default {
                 <div class="housedetail">
                     <div class="firstline">
                         <a class="street">{{ house.location.street }}</a>
-                        <div class="edits">
-                            <router-link class="edit" to="/edit-house">
+                        <div class="edits" v-if="house.madeByMe">
+                            <router-link class="edit" :to="`/edit-house/${house.id}`">
                                 <img class="edit" src="../../assets/dtt/ic_edit.png" alt="edit">
                             </router-link>
-                            <router-link class="delete" to="/delete">
+                            <div class="deletebutton" @click="deletePopup(house.id)">
                                 <img class="delete" src="../../assets/dtt/ic_delete.png" alt="delete">
-                            </router-link>
+                            </div>
 
                         </div>
                     </div>
@@ -112,28 +156,34 @@ export default {
 
             <div class="recommended">
                 <a class="recommendedtext">Recommended for you</a>
-                <div class="smallhouse" v-for="house in getRandomHouses(3)" :key="house.id">
-                    <img :src="`${house.image}`" alt="" class="smallhouseimage">
-                    <div class="smallhousedetail">
-                        <div class="smallstreet">
-                            <a class="smallhousestreet">{{ house.location.street }}</a>
-                        </div>
-                        <div class="smallprice">
-                            <a class="smallhouseprice">€ {{ house.price }}</a>
-                        </div>
-                        <div class="smallpostalcode">
-                            <a class="smallhousepostalcode">{{ house.location.zip + ' ' + house.location.city }}</a>
-                        </div>
+                <div v-for="house in recommendedHouses.slice(0, 3)" :key="house.id">
+                    <router-link class="housedetail" style="text-decoration: none; color: inherit;"
+                        :to="{ name: 'detail', params: { id: house.id } }">
+                        <div class="smallhouse">
+                            <img :src="`${house.image}`" alt="" class="smallhouseimage">
+                            <div class="smallhousedetail">
+                                <div class="smallstreet">
+                                    <a class="smallhousestreet">{{ house.location.street }}</a>
+                                </div>
+                                <div class="smallprice">
+                                    <a class="smallhouseprice">€ {{ house.price }}</a>
+                                </div>
+                                <div class="smallpostalcode">
+                                    <a class="smallhousepostalcode">{{ house.location.zip + ' ' + house.location.city }}</a>
+                                </div>
 
-                        <div class="smalldetails">
-                            <img src="../../assets/dtt/ic_bed.png" alt="bed" class="smallbedimage">
-                            <a class="smallbedtext">{{ house.rooms.bedromms }}</a>
-                            <img src="../../assets/dtt/ic_bath.png" alt="bath" class="smallbathimage">
-                            <a class="smallbathtext">{{ house.rooms.bathrooms }}</a>
-                            <img src="../../assets/dtt/ic_size.png" alt="size" class="smallsizeimage">
-                            <a class="smallsizetext">{{ house.size }} m2</a>
+                                <div class="smalldetails">
+                                    <img src="../../assets/dtt/ic_bed.png" alt="bed" class="smallbedimage">
+                                    <a class="smallbedtext">{{ house.rooms.bedromms }}</a>
+                                    <img src="../../assets/dtt/ic_bath.png" alt="bath" class="smallbathimage">
+                                    <a class="smallbathtext">{{ house.rooms.bathrooms }}</a>
+                                    <img src="../../assets/dtt/ic_size.png" alt="size" class="smallsizeimage">
+                                    <a class="smallsizetext">{{ house.size }} m2</a>
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    </router-link>
+
                 </div>
             </div>
 
@@ -147,9 +197,89 @@ export default {
     margin-left: 15%;
 }
 
+router-link {
+    text-decoration: none;
+    color: inherit;
+}
+
 .mid {
     display: flex;
     width: 100%;
+}
+
+.popup {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.popup-content {
+    background-color: var(--background);
+    padding: 20px;
+    width: 40%;
+    margin: auto;
+    height: 35%;
+    border-radius: 3%;
+}
+
+.deletebutton {
+    cursor: pointer;
+}
+
+#yes,
+#no {
+    cursor: pointer;
+}
+
+.headertext {
+    font-family: var(--font-family);
+    font-size: 20px;
+    display: flex;
+    justify-content: center;
+    color: var(--primary-text);
+    font-weight: 550;
+    margin-top: 15px;
+}
+
+.popup-text {
+    font-family: var(--font-family);
+    display: flex;
+    justify-content: center;
+    font-size: 12px;
+    color: var(--secondary-text);
+}
+
+#firsttext {
+    margin-top: 15px;
+}
+
+.popup-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.popup-button {
+    font-family: var(--font-family);
+    width: 50%;
+    height: 15%;
+    margin-top: 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: var(--primary);
+    color: var(--background);
+    font-weight: 550;
+}
+
+#no {
+    background-color: var(--secondary);
 }
 
 .back {
@@ -370,6 +500,15 @@ export default {
         position: relative;
     }
 
+    .popup-content {
+        background-color: var(--background);
+        padding: 20px;
+        width: 70%;
+        margin: auto;
+        height: 35%;
+        border-radius: 3%;
+    }
+
     .mid {
         display: block;
     }
@@ -530,4 +669,5 @@ export default {
     }
 
 
-}</style>
+}
+</style>

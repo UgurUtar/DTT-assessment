@@ -1,5 +1,44 @@
 <script>
+import { useHousesStore } from '@/stores/app.js';
+import { ref, computed } from 'vue';
 
+const searchQuery = ref('');
+
+export { searchQuery }
+
+
+export default {
+    setup() {
+        const activeButton = ref('price')
+
+        function clearSearch() {
+            searchQuery.value = '';
+        }
+
+        function sortPrice() {
+            const storeHouses = useHousesStore();
+            activeButton.value = 'price';
+            return storeHouses.sortHousesByPrice();
+        }
+
+        function sortSize() {
+            const storeHouses = useHousesStore();
+            activeButton.value = 'size';
+            return storeHouses.sortHousesBySize();
+        }
+
+        const isSizeActive = computed(() => activeButton.value === 'size')
+
+        return {
+            searchQuery,
+            clearSearch,
+            sortPrice,
+            activeButton,
+            isSizeActive,
+            sortSize,
+        };
+    }
+};
 </script>
 
 <template>
@@ -22,14 +61,14 @@
     <div class="mid">
         <div class="searchbar">
             <img class="searchmagnifier" src="@/assets/dtt/ic_search.png" alt="search magnifier">
-            <input class="search" type="text" placeholder="Search for a house" />
-            <img src="@/assets/dtt/ic_clear.png" alt="cancel" class="clearsearch">
+            <input class="search" type="text" placeholder="Search for a house" v-model="searchQuery" />
+            <img src="@/assets/dtt/ic_clear.png" v-if="searchQuery" alt="cancel" class="clearsearch" @click="clearSearch()">
         </div>
         <div class="doubleButtons">
-            <div class="button1">
+            <div :class="{ active: activeButton === 'price', red: isSizeActive }" @click="sortPrice()" class="button1">
                 <button class="price">Price</button>
             </div>
-            <div class="button2">
+            <div :class="{ active: activeButton === 'size' }" @click="sortSize()" class="button2">
                 <button class="size">Size</button>
             </div>
         </div>
@@ -125,6 +164,16 @@ input[type="text"] {
     left: 10px;
 }
 
+
+.button1.red {
+    background-color: var(--tertiary2);
+}
+
+.button2.active {
+    background-color: var(--primary);
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
 .doubleButtons {
     display: flex;
     background: var(--tertiary2);
@@ -133,6 +182,7 @@ input[type="text"] {
     border-radius: 10px;
     justify-content: space-between;
     align-items: center;
+    cursor: pointer;
 }
 
 .button1,
@@ -156,6 +206,7 @@ button {
     font-family: var(--font-family);
     font-weight: 550;
     color: var(--background);
+    cursor: pointer;
 }
 
 a.router-link-exact-active {
