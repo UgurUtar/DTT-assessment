@@ -149,7 +149,7 @@ export default {
                     <div class="garagefield">
                         <label class="labelgarage" for="garage">Garage*</label>
                         <select v-model="newHouse.hasGarage" class="garage">
-                            <option selected disabled>Select</option>
+                            <option value="" selected disabled>Select</option>
                             <option value="true">Yes</option>
                             <option value="false">No</option>
                         </select>

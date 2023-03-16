@@ -11,8 +11,6 @@ const requestOptions = {
     redirect: 'follow'
 };
 
-const router = useRoute();
-
 
 export const useHousesStore = defineStore({
     id: 'houses',
